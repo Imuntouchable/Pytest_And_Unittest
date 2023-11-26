@@ -29,7 +29,7 @@ def test_user_can_create_comment(
     assertRedirects(response, f'{url}#comments')
     comments_count = Comment.objects.count()
     assert comments_count == 1
-    comment = Comment.objects.latest('news')
+    comment = Comment.objects.latest('text')
     assert comment.text == form_data['text']
     assert comment.news == news
     assert comment.author == author
