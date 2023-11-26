@@ -2,9 +2,10 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
+from pytest_django.asserts import assertFormError, assertRedirects
+
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
-from pytest_django.asserts import assertFormError, assertRedirects
 
 pytestmark = pytest.mark.django_db
 
@@ -28,7 +29,7 @@ def test_user_can_create_comment(
     assertRedirects(response, f'{url}#comments')
     comments_count = Comment.objects.count()
     assert comments_count == 1
-    comment = Comment.objects.get()
+    comment = Comment.objects.latest('news')
     assert comment.text == form_data['text']
     assert comment.news == news
     assert comment.author == author

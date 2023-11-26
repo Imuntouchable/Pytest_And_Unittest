@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pytest
 from django.conf import settings
 from django.utils import timezone
+
 from news.models import Comment, News
 
 
@@ -19,11 +20,10 @@ def author_client(author, client):
 
 @pytest.fixture
 def news():
-    news = News.objects.create(
+    return News.objects.create(
         title='title',
         text='text',
     )
-    return news
 
 
 @pytest.fixture
@@ -33,12 +33,11 @@ def news_pk(news):
 
 @pytest.fixture
 def comment(author, news):
-    comment = Comment.objects.create(
+    return Comment.objects.create(
         news=news,
         author=author,
         text='text'
     )
-    return comment
 
 
 @pytest.fixture
@@ -55,10 +54,11 @@ def form_data():
 
 @pytest.fixture
 def bulk_news():
+    now = timezone.now()
     News.objects.bulk_create(
         News(title=f'News {index}',
              text='News text',
-             date=datetime.today() - timedelta(days=index)
+             date=now - timedelta(days=index)
              )
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
     )
@@ -73,5 +73,5 @@ def bulk_comments(news, author):
             author=author,
             text=f'Text {index}'
         )
-        comment.created = now + timedelta(days=index)
+        comment.created = now - timedelta(days=index)
         comment.save()

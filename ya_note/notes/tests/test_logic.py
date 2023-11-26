@@ -16,6 +16,7 @@ class TestNoteCreation(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.notes_count = Note.objects.count()
         cls.author = User.objects.create(username='Лев Толстой')
         cls.form_data = {'title': 'title',
                          'text': 'text',
@@ -26,14 +27,12 @@ class TestNoteCreation(TestCase):
     def test_author_can_create(self):
         response = self.author_client.post(self.ADD_URL, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
-        notes_count = 1
         notes_create_count = Note.objects.count()
-        self.assertEqual(notes_create_count, notes_count)
+        self.assertEqual(self.notes_count + 1, notes_create_count)
         note = Note.objects.filter(slug=self.form_data['slug']).first()
         self.assertIsNotNone(note)
         self.assertEqual(note.title, self.form_data['title'])
         self.assertEqual(note.text, self.form_data['text'])
-        self.assertEqual(note.slug, self.form_data['slug'])
         self.assertEqual(note.author, self.author)
 
     def test_unique_slugs(self):
@@ -50,8 +49,7 @@ class TestNoteCreation(TestCase):
         del self.form_data['slug']
         self.author_client.post(self.ADD_URL, data=self.form_data)
         slug = slugify(self.form_data['title'])
-        created_note = Note.objects.get(slug=slug)
-        self.assertEqual(created_note.slug, slug)
+        return Note.objects.get(slug=slug)
 
 
 class TestNoteEditDelete(TestCase):
