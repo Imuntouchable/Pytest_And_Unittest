@@ -49,7 +49,8 @@ class TestNoteCreation(TestCase):
         del self.form_data['slug']
         self.author_client.post(self.ADD_URL, data=self.form_data)
         slug = slugify(self.form_data['title'])
-        Note.objects.get(slug=slug)
+        note = Note.objects.get(slug=slug)
+        self.assertIsNotNone(note)
 
 
 class TestNoteEditDelete(TestCase):

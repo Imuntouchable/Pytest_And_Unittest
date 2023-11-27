@@ -8,6 +8,11 @@ from news.models import Comment, News
 
 
 @pytest.fixture
+def count_comments_initially():
+    return Comment.objects.count()
+
+
+@pytest.fixture
 def author(django_user_model):
     return django_user_model.objects.create(username='Автор')
 
